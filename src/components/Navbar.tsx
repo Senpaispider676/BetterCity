@@ -109,25 +109,25 @@ export const Navbar: React.FC = () => {
         </div>
 
         {/* Right Section: Theme, Language, Report CTA, Officer portal & Auth */}
-        <div className="flex items-center gap-2 sm:gap-2.5">
+        <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
           <LanguageSwitcher className="hidden sm:inline-flex" />
           <ThemeToggle />
 
           {/* Report Issue CTA Button */}
           <button
             onClick={openReportModal}
-            className="px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-1.5 bg-gradient-to-r from-spatial-blue to-blue-600 text-white shadow-md hover:shadow-spatial-lg hover:brightness-110 active:scale-95 transition-all duration-200 cursor-pointer"
+            className="px-2.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-1.5 bg-gradient-to-r from-spatial-blue to-blue-600 text-white shadow-md hover:shadow-spatial-lg hover:brightness-110 active:scale-95 transition-all duration-200 cursor-pointer whitespace-nowrap"
           >
-            <PlusCircle className="w-4 h-4 stroke-[2.2]" />
-            <span className="hidden xs:inline">{t.nav.reportIssue}</span>
-            <span className="xs:hidden">{t.nav.reportPlus}</span>
+            <PlusCircle className="w-4 h-4 stroke-[2.2] shrink-0" />
+            <span className="hidden sm:inline">{t.nav.reportIssue}</span>
+            <span className="sm:hidden">Report</span>
           </button>
 
-          {/* Officer Admin Portal Discreet Link */}
+          {/* Officer Admin Portal Discreet Link (hidden on small mobile to avoid overflow, available in drawer menu) */}
           <button
             onClick={() => handleTabClick('admin')}
             title="Officer & Admin Console"
-            className={`p-2 rounded-xl border transition-colors ${
+            className={`hidden sm:flex p-2 rounded-xl border transition-colors ${
               activeTab === 'admin'
                 ? 'bg-spatial-blue text-white border-spatial-blue'
                 : 'border-spatial-border bg-spatial-bg hover:bg-spatial-card text-spatial-muted hover:text-spatial-text'
@@ -196,17 +196,17 @@ export const Navbar: React.FC = () => {
           ) : (
             <button
               onClick={() => openAuthModal('signin')}
-              className="px-3 py-2 rounded-xl text-xs sm:text-sm font-medium border border-spatial-border bg-spatial-bg hover:bg-spatial-card text-spatial-text transition-all duration-200 flex items-center gap-1.5 cursor-pointer"
+              className="px-2.5 sm:px-3 py-2 rounded-xl text-xs sm:text-sm font-medium border border-spatial-border bg-spatial-bg hover:bg-spatial-card text-spatial-text transition-all duration-200 flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
             >
               <User className="w-3.5 h-3.5 text-spatial-muted" />
-              <span>{t.nav.signIn}</span>
+              <span className="hidden xs:inline">{t.nav.signIn}</span>
             </button>
           )}
 
           {/* Mobile Menu Hamburger */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-2 rounded-xl border border-spatial-border bg-spatial-bg text-spatial-text hover:bg-spatial-card transition-colors"
+            className="lg:hidden p-2 rounded-xl border border-spatial-border bg-spatial-bg text-spatial-text hover:bg-spatial-card transition-colors shrink-0"
             aria-label="Open mobile navigation menu"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
