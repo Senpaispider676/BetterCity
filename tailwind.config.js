@@ -8,6 +8,17 @@ export default {
   theme: {
     extend: {
       colors: {
+        evergreen: {
+          frosted: '#d8f3dc',
+          celadon: '#b7e4c7',
+          celadon2: '#95d5b2',
+          mint: '#74c69d',
+          mint2: '#52b788',
+          sea: '#40916c',
+          emerald: '#2d6a4f',
+          pine: '#1b4332',
+          dark: '#081c15',
+        },
         spatial: {
           bg: 'var(--bg-primary)',
           bgSec: 'var(--bg-secondary)',
@@ -19,8 +30,8 @@ export default {
           muted: 'var(--text-secondary)',
           input: 'var(--input-bg)',
           inputBorder: 'var(--input-border)',
-          blue: '#3B82F6',
-          green: '#2E9D68',
+          blue: 'var(--primary-accent)', // Dynamic accent (#52b788 in dark, #2d6a4f in light)
+          green: '#52b788',
           orange: '#FFB547',
           red: '#EF4444',
         }

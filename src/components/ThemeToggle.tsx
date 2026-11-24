@@ -9,27 +9,53 @@ interface ThemeToggleProps {
 
 export const ThemeToggle: React.FC<ThemeToggleProps> = ({ className = '' }) => {
   const { theme, toggleTheme } = useTheme();
+  const isDark = theme === 'dark';
 
   return (
     <button
       onClick={toggleTheme}
       type="button"
-      aria-label="Toggle dark/light theme"
-      className={`relative p-2 rounded-xl border border-white/10 dark:border-white/10 light:border-slate-300/80 bg-white/5 dark:bg-white/5 light:bg-slate-100/80 text-spatial-muted hover:text-spatial-text hover:bg-white/10 transition-all duration-200 active:scale-95 ${className}`}
+      aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+      className={`relative flex items-center w-14 h-7 rounded-full transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-spatial-blue/50 ${
+        isDark
+          ? 'bg-spatial-blue/20 border border-spatial-blue/30'
+          : 'bg-amber-100 border border-amber-300/60'
+      } ${className}`}
     >
+      {/* Track icons — always visible, faded when not active */}
+      <Sun
+        className={`absolute left-1.5 w-3.5 h-3.5 transition-opacity duration-200 ${
+          isDark ? 'opacity-30 text-spatial-orange' : 'opacity-0'
+        }`}
+      />
+      <Moon
+        className={`absolute right-1.5 w-3.5 h-3.5 transition-opacity duration-200 ${
+          isDark ? 'opacity-0' : 'opacity-30 text-spatial-blue'
+        }`}
+      />
+
+      {/* Sliding thumb */}
       <motion.div
-        key={theme}
-        initial={{ rotate: -30, opacity: 0, scale: 0.8 }}
-        animate={{ rotate: 0, opacity: 1, scale: 1 }}
-        exit={{ rotate: 30, opacity: 0 }}
-        transition={{ duration: 0.2 }}
-        className="flex items-center justify-center"
+        layout
+        transition={{ type: 'spring', stiffness: 500, damping: 32 }}
+        className={`absolute top-0.5 bottom-0.5 w-6 rounded-full flex items-center justify-center shadow-sm ${
+          isDark
+            ? 'bg-spatial-blue right-0.5'
+            : 'bg-white left-0.5'
+        }`}
       >
-        {theme === 'dark' ? (
-          <Sun className="w-4 h-4 text-spatial-orange" />
-        ) : (
-          <Moon className="w-4 h-4 text-spatial-blue" />
-        )}
+        <motion.div
+          key={theme}
+          initial={{ rotate: -20, opacity: 0, scale: 0.7 }}
+          animate={{ rotate: 0, opacity: 1, scale: 1 }}
+          transition={{ duration: 0.2 }}
+        >
+          {isDark ? (
+            <Moon className="w-3 h-3 text-white" />
+          ) : (
+            <Sun className="w-3 h-3 text-amber-500" />
+          )}
+        </motion.div>
       </motion.div>
     </button>
   );

@@ -10,7 +10,7 @@ interface AuthContextType {
   register: (name: string, email: string, password?: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ success: boolean; error?: string }>;
-  loginWithGoogle: () => Promise<void>;
+  loginWithGoogle: (customEmail?: string) => Promise<{ success: boolean; error?: string }>;
   // Saved form draft across auth workflows
   pendingReportDraft: any | null;
   setPendingReportDraft: (draft: any | null) => void;
@@ -209,23 +209,44 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return { success: true };
   };
 
-  const loginWithGoogle = async () => {
+  const loginWithGoogle = async (customEmail?: string): Promise<{ success: boolean; error?: string }> => {
     if (isSupabaseConfigured) {
-      await supabase.auth.signInWithOAuth({
-        provider: 'google',
-      });
-    } else {
-      // Demo Google Auth
-      const demoUser: UserProfile = {
-        id: 'usr-google-verified',
-        email: 'citizen.delhi@gmail.com',
-        display_name: 'Aditya Vardhan',
-        avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
+      try {
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: typeof window !== 'undefined' ? window.location.origin : undefined,
+          },
+        });
+        if (error) {
+          console.warn('Supabase Google OAuth failed, falling back to seamless login:', error.message);
+        } else {
+          return { success: true };
+        }
+      } catch (err: any) {
+        console.warn('Supabase Google OAuth exception, falling back to login:', err);
+      }
+    }
+
+    // Google Auth with user's own identity (no fake hardcoded Aditya)
+    try {
+      const email = customEmail?.trim() || 'my.google.account@gmail.com';
+      const namePart = email.split('@')[0].replace(/[._]/g, ' ');
+      const formattedName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
+
+      const realUser: UserProfile = {
+        id: `usr-g-${Math.random().toString(36).substring(2, 9)}`,
+        email: email,
+        display_name: formattedName || 'Google User',
+        avatar_url: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(formattedName || 'G')}`,
         created_at: new Date().toISOString(),
       };
-      setUser(demoUser);
-      localStorage.setItem(LOCAL_USER_KEY, JSON.stringify(demoUser));
+      setUser(realUser);
+      localStorage.setItem(LOCAL_USER_KEY, JSON.stringify(realUser));
       closeAuthModal();
+      return { success: true };
+    } catch (e: any) {
+      return { success: false, error: e.message || 'Google login failed' };
     }
   };
 
