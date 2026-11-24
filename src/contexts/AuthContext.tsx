@@ -24,6 +24,44 @@ interface AuthContextType {
 
 const LOCAL_USER_KEY = 'bettercity_auth_user';
 const REPORT_DRAFT_KEY = 'bettercity_pending_report_draft';
+const REGISTERED_ACCOUNTS_KEY = 'bettercity_registered_accounts';
+
+interface StoredAccount {
+  id: string;
+  name: string;
+  email: string;
+  passwordHash: string;
+  avatar_url?: string;
+  created_at: string;
+}
+
+// Simple deterministic hash for local client-side offline storage
+const hashPassword = (pwd: string): string => {
+  let hash = 0;
+  for (let i = 0; i < pwd.length; i++) {
+    const char = pwd.charCodeAt(i);
+    hash = (hash << 5) - hash + char;
+    hash |= 0;
+  }
+  return `h_${Math.abs(hash).toString(36)}_${pwd.length}`;
+};
+
+const getStoredAccounts = (): Record<string, StoredAccount> => {
+  try {
+    const data = localStorage.getItem(REGISTERED_ACCOUNTS_KEY);
+    return data ? JSON.parse(data) : {};
+  } catch {
+    return {};
+  }
+};
+
+const saveStoredAccounts = (accounts: Record<string, StoredAccount>) => {
+  try {
+    localStorage.setItem(REGISTERED_ACCOUNTS_KEY, JSON.stringify(accounts));
+  } catch (err) {
+    console.error('Failed to save accounts to localStorage', err);
+  }
+};
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -110,15 +148,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const login = async (email: string, password = ''): Promise<{ success: boolean; error?: string }> => {
+    const normalizedEmail = email.trim().toLowerCase();
+
     if (isSupabaseConfigured) {
       try {
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        const { data, error } = await supabase.auth.signInWithPassword({ email: normalizedEmail, password });
         if (error) return { success: false, error: error.message };
         if (data.user) {
           const profile: UserProfile = {
             id: data.user.id,
-            email: data.user.email || email,
-            display_name: data.user.user_metadata?.full_name || email.split('@')[0],
+            email: data.user.email || normalizedEmail,
+            display_name: data.user.user_metadata?.full_name || normalizedEmail.split('@')[0],
             created_at: data.user.created_at,
           };
           setUser(profile);
@@ -130,30 +170,53 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     }
 
-    // Local / Offline demo authentication
-    const displayName = email.split('@')[0].replace(/[._]/g, ' ');
-    const formattedName = displayName.charAt(0).toUpperCase() + displayName.slice(1);
+    // Local persistent account verification
+    const accounts = getStoredAccounts();
+    const account = accounts[normalizedEmail];
+
+    if (!account) {
+      return {
+        success: false,
+        error: 'No account found with this email. Please click "Create Account" first.',
+      };
+    }
+
+    if (account.passwordHash !== hashPassword(password)) {
+      return {
+        success: false,
+        error: 'Incorrect password. Please verify your credentials and try again.',
+      };
+    }
+
     const profile: UserProfile = {
-      id: `usr-${Math.random().toString(36).substring(2, 9)}`,
-      email,
-      display_name: formattedName || 'Active Citizen',
-      created_at: new Date().toISOString(),
-      avatar_url: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(formattedName)}`,
+      id: account.id,
+      email: account.email,
+      display_name: account.name,
+      created_at: account.created_at,
+      avatar_url: account.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(account.name)}`,
     };
+
     setUser(profile);
     localStorage.setItem(LOCAL_USER_KEY, JSON.stringify(profile));
     return { success: true };
   };
 
   const register = async (name: string, email: string, password = ''): Promise<{ success: boolean; error?: string }> => {
+    const normalizedEmail = email.trim().toLowerCase();
+    const trimmedName = name.trim();
+
+    if (!password || password.length < 6) {
+      return { success: false, error: 'Password must be at least 6 characters long.' };
+    }
+
     if (isSupabaseConfigured) {
       try {
         const { data, error } = await supabase.auth.signUp({
-          email,
+          email: normalizedEmail,
           password,
           options: {
             data: {
-              full_name: name,
+              full_name: trimmedName,
             },
           },
         });
@@ -161,8 +224,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (data.user) {
           const profile: UserProfile = {
             id: data.user.id,
-            email: data.user.email || email,
-            display_name: name,
+            email: data.user.email || normalizedEmail,
+            display_name: trimmedName,
             created_at: data.user.created_at,
           };
           setUser(profile);
@@ -174,14 +237,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     }
 
-    // Local / Offline demo registration
-    const profile: UserProfile = {
+    // Local persistent account registration
+    const accounts = getStoredAccounts();
+
+    if (accounts[normalizedEmail]) {
+      return {
+        success: false,
+        error: 'An account with this email already exists. Please Sign In instead.',
+      };
+    }
+
+    const newAccount: StoredAccount = {
       id: `usr-${Math.random().toString(36).substring(2, 9)}`,
-      email,
-      display_name: name,
+      name: trimmedName,
+      email: normalizedEmail,
+      passwordHash: hashPassword(password),
+      avatar_url: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(trimmedName)}`,
       created_at: new Date().toISOString(),
-      avatar_url: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name)}`,
     };
+
+    accounts[normalizedEmail] = newAccount;
+    saveStoredAccounts(accounts);
+
+    const profile: UserProfile = {
+      id: newAccount.id,
+      email: newAccount.email,
+      display_name: newAccount.name,
+      created_at: newAccount.created_at,
+      avatar_url: newAccount.avatar_url,
+    };
+
     setUser(profile);
     localStorage.setItem(LOCAL_USER_KEY, JSON.stringify(profile));
     return { success: true };
