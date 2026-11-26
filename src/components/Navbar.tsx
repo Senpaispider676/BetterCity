@@ -3,6 +3,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useReports } from '../contexts/ReportContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useAccessibility } from '../contexts/AccessibilityContext';
+import { ThemeToggle } from './ThemeToggle';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { ActiveTab } from '../types';
 import {
@@ -20,7 +21,14 @@ import {
   X,
   Compass,
   ShieldCheck,
-  Lock
+  Lock,
+  Volume2,
+  VolumeX,
+  Eye,
+  ZoomIn,
+  ZoomOut,
+  RotateCcw,
+  Sparkles
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -28,8 +36,21 @@ export const Navbar: React.FC = () => {
   const { t } = useLanguage();
   const { activeTab, setActiveTab, openReportModal } = useReports();
   const { user, isAuthenticated, logout, openAuthModal } = useAuth();
+  const {
+    isAccessibilityOn,
+    speechEnabled,
+    fontScale,
+    highContrast,
+    toggleAccessibility,
+    toggleSpeech,
+    increaseFont,
+    decreaseFont,
+    resetFont,
+    toggleHighContrast,
+  } = useAccessibility();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const [accOpen, setAccOpen] = useState(false);
   const [logoError, setLogoError] = useState(false);
 
   const navLinks: Array<{ tab: ActiveTab; label: string; icon: React.ReactNode }> = [
@@ -112,6 +133,145 @@ export const Navbar: React.FC = () => {
         <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
           <LanguageSwitcher className="hidden sm:inline-flex" />
           <ThemeToggle />
+          {/* Accessibility Controls */}
+          <div className="relative inline-block text-left">
+            <button
+              onClick={() => setAccOpen(!accOpen)}
+              title="Accessibility Tools (Voice & Large Text)"
+              aria-label="Accessibility Settings"
+              className={`p-2 rounded-xl border transition-all duration-200 relative ${
+                isAccessibilityOn || speechEnabled || fontScale > 1
+                  ? 'border-emerald-500 bg-emerald-500/15 text-emerald-500 shadow-sm ring-1 ring-emerald-500/30'
+                  : 'border-slate-200 dark:border-spatial-border bg-slate-100/80 dark:bg-spatial-bg hover:bg-slate-200/80 dark:hover:bg-spatial-card text-slate-600 dark:text-spatial-muted hover:text-slate-900 dark:hover:text-spatial-text'
+              }`}
+            >
+              <Volume2 className="w-4 h-4" />
+              {(isAccessibilityOn || speechEnabled || fontScale > 1) && (
+                <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-500 rounded-full ring-2 ring-white dark:ring-spatial-card animate-pulse" />
+              )}
+            </button>
+
+            <AnimatePresence>
+              {accOpen && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95, y: 8 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, y: 8 }}
+                  className="origin-top-right absolute right-0 mt-2 w-72 rounded-2xl bg-white dark:bg-spatial-card border border-slate-200 dark:border-spatial-border shadow-2xl p-3 z-50 text-xs backdrop-blur-xl"
+                >
+                  <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-200 dark:border-spatial-border">
+                    <div className="flex items-center gap-1.5 font-bold text-slate-800 dark:text-spatial-text">
+                      <Sparkles className="w-4 h-4 text-emerald-500" />
+                      <span>Accessibility Hub</span>
+                    </div>
+                    <button
+                      onClick={() => setAccOpen(false)}
+                      className="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-spatial-text"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+
+                  {/* 1-Click Master Mode */}
+                  <div className="mb-3 p-2.5 rounded-xl bg-slate-50 dark:bg-white/[0.04] border border-slate-200 dark:border-white/10">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="font-semibold text-slate-800 dark:text-spatial-text text-xs">
+                          Accessibility Mode
+                        </div>
+                        <div className="text-[10px] text-slate-500 dark:text-spatial-muted">
+                          Enlarged text + voice reader
+                        </div>
+                      </div>
+                      <button
+                        onClick={toggleAccessibility}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm ${
+                          isAccessibilityOn
+                            ? 'bg-emerald-500 text-white shadow-emerald-500/20'
+                            : 'bg-slate-200 dark:bg-spatial-card text-slate-700 dark:text-spatial-muted hover:bg-slate-300'
+                        }`}
+                      >
+                        {isAccessibilityOn ? 'ON' : 'OFF'}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Text To Speech */}
+                  <div className="flex items-center justify-between py-2 px-1 border-b border-slate-100 dark:border-white/5">
+                    <div className="flex items-center gap-2 text-slate-700 dark:text-spatial-text">
+                      {speechEnabled ? (
+                        <Volume2 className="w-4 h-4 text-emerald-500" />
+                      ) : (
+                        <VolumeX className="w-4 h-4 text-slate-400" />
+                      )}
+                      <span>Text-to-Speech (TTS)</span>
+                    </div>
+                    <button
+                      onClick={toggleSpeech}
+                      className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-colors ${
+                        speechEnabled
+                          ? 'bg-emerald-500/15 text-emerald-500 border border-emerald-500/30'
+                          : 'bg-slate-100 dark:bg-spatial-bg text-slate-500 dark:text-spatial-muted'
+                      }`}
+                    >
+                      {speechEnabled ? 'Speaking' : 'Muted'}
+                    </button>
+                  </div>
+
+                  {/* Font Size Scaling */}
+                  <div className="py-2.5 px-1 border-b border-slate-100 dark:border-white/5">
+                    <div className="flex items-center justify-between mb-1.5 text-slate-700 dark:text-spatial-text">
+                      <span>Font Size</span>
+                      <span className="font-mono text-emerald-500 font-bold">
+                        {Math.round(fontScale * 100)}%
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        onClick={decreaseFont}
+                        className="flex-1 py-1 px-2 rounded-lg bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-spatial-text font-bold text-center"
+                        title="Smaller text"
+                      >
+                        A-
+                      </button>
+                      <button
+                        onClick={resetFont}
+                        className="py-1 px-2 rounded-lg bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-500 dark:text-spatial-muted text-[10px]"
+                        title="Reset size"
+                      >
+                        Reset
+                      </button>
+                      <button
+                        onClick={increaseFont}
+                        className="flex-1 py-1 px-2 rounded-lg bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-spatial-text font-bold text-center text-sm"
+                        title="Larger text"
+                      >
+                        A+
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* High Contrast */}
+                  <div className="flex items-center justify-between pt-2 px-1">
+                    <div className="flex items-center gap-2 text-slate-700 dark:text-spatial-text">
+                      <Eye className="w-4 h-4 text-slate-400" />
+                      <span>High Contrast</span>
+                    </div>
+                    <button
+                      onClick={toggleHighContrast}
+                      className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-colors ${
+                        highContrast
+                          ? 'bg-emerald-500/15 text-emerald-500 border border-emerald-500/30'
+                          : 'bg-slate-100 dark:bg-spatial-bg text-slate-500 dark:text-spatial-muted'
+                      }`}
+                    >
+                      {highContrast ? 'Active' : 'Normal'}
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
 
           {/* Report Issue CTA Button */}
           <button
@@ -274,7 +434,25 @@ export const Navbar: React.FC = () => {
                 </button>
               )}
 
+              {/* Mobile Accessibility Bar */}
               <div className="pt-3 mt-2 border-t border-spatial-border flex items-center justify-between">
+                <div className="flex items-center gap-1.5 text-xs text-spatial-text font-medium">
+                  <Volume2 className="w-4 h-4 text-emerald-500" />
+                  <span>Accessibility Mode</span>
+                </div>
+                <button
+                  onClick={toggleAccessibility}
+                  className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
+                    isAccessibilityOn
+                      ? 'bg-emerald-500 text-white'
+                      : 'bg-slate-200 dark:bg-white/10 text-slate-700 dark:text-spatial-muted'
+                  }`}
+                >
+                  {isAccessibilityOn ? 'ON' : 'OFF'}
+                </button>
+              </div>
+
+              <div className="pt-2 flex items-center justify-between">
                 <span className="text-xs text-spatial-muted">Language / भाषा</span>
                 <LanguageSwitcher />
               </div>

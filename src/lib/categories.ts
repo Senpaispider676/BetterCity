@@ -16,7 +16,8 @@ import {
   AlertTriangle,
   RotateCcw,
   XCircle,
-  FileCheck
+  FileCheck,
+  Wrench
 } from 'lucide-react';
 import { CategoryType, UrgencyType, ReportStatusType } from '../types';
 
@@ -98,6 +99,13 @@ export const CATEGORY_CONFIG: Record<CategoryType, CategoryMeta> = {
     color: 'text-teal-400',
     bgLight: 'bg-teal-400/10',
     borderColor: 'border-teal-400/30',
+  },
+  vehicle_breakdown: {
+    type: 'vehicle_breakdown',
+    icon: Wrench,
+    color: 'text-amber-500',
+    bgLight: 'bg-amber-500/10',
+    borderColor: 'border-amber-500/30',
   },
   other: {
     type: 'other',

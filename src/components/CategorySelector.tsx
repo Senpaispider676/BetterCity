@@ -26,6 +26,7 @@ export const CategorySelector: React.FC<CategorySelectorProps> = ({
     'safety_hazard',
     'traffic',
     'accident',
+    'vehicle_breakdown',
     'cleanup',
     'other',
   ];

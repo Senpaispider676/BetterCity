@@ -50,6 +50,25 @@
     --primary-accent-hover: #40916c;
   }
 
+  html {
+    font-size: calc(16px * var(--font-scale, 1));
+    transition: font-size 0.2s ease;
+  }
+
+  html.high-contrast-mode {
+    --text-primary: #ffffff !important;
+    --text-secondary: #f8fafc !important;
+    --border-subtle: rgba(255, 255, 255, 0.4) !important;
+    --border-hover: rgba(255, 255, 255, 0.8) !important;
+  }
+
+  html.light.high-contrast-mode {
+    --text-primary: #000000 !important;
+    --text-secondary: #0f172a !important;
+    --border-subtle: rgba(0, 0, 0, 0.5) !important;
+    --border-hover: rgba(0, 0, 0, 0.9) !important;
+  }
+
   body {
     background-color: var(--bg-primary);
     color: var(--text-primary);

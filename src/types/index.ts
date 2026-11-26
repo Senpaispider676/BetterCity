@@ -9,6 +9,7 @@ export type CategoryType =
   | 'traffic'
   | 'accident'
   | 'cleanup'
+  | 'vehicle_breakdown'
   | 'other';
 
 export type UrgencyType = 'low' | 'medium' | 'high' | 'critical';
