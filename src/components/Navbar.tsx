@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useReports } from '../contexts/ReportContext';
 import { useAuth } from '../contexts/AuthContext';
-import { ThemeToggle } from './ThemeToggle';
+import { useAccessibility } from '../contexts/AccessibilityContext';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { ActiveTab } from '../types';
 import {
@@ -47,7 +47,7 @@ export const Navbar: React.FC = () => {
 
   return (
     <header className="sticky top-0 z-50 px-3 sm:px-6 py-3 pointer-events-none">
-      <nav className="pointer-events-auto max-w-7xl mx-auto rounded-spatial-lg bg-spatial-card border border-spatial-border px-3 sm:px-5 py-2.5 flex items-center justify-between shadow-spatial transition-all duration-300 backdrop-blur-xl">
+      <nav className="pointer-events-auto max-w-7xl mx-auto rounded-spatial-lg bg-white/95 dark:bg-spatial-card border border-slate-200/80 dark:border-spatial-border px-3 sm:px-5 py-2.5 flex items-center justify-between shadow-lg shadow-slate-200/50 dark:shadow-spatial transition-all duration-300 backdrop-blur-xl">
         
         {/* Brand / Logo */}
         <div
@@ -77,7 +77,7 @@ export const Navbar: React.FC = () => {
         </div>
 
         {/* Desktop Nav Items */}
-        <div className="hidden lg:flex items-center gap-1 bg-spatial-bg p-1 rounded-xl border border-spatial-border">
+        <div className="hidden lg:flex items-center gap-1 bg-slate-100 dark:bg-white/[0.04] p-1 rounded-xl border border-slate-200/90 dark:border-spatial-border shadow-inner">
           {navLinks.map((item) => {
             const isActive = activeTab === item.tab;
             return (
@@ -87,19 +87,19 @@ export const Navbar: React.FC = () => {
                 className={`
                   relative px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-all duration-200
                   ${isActive
-                    ? 'text-white font-semibold'
-                    : 'text-spatial-muted hover:text-spatial-text hover:bg-spatial-card'
+                    ? 'text-white font-semibold shadow-sm'
+                    : 'text-slate-600 dark:text-spatial-muted hover:text-slate-900 dark:hover:text-spatial-text hover:bg-white/80 dark:hover:bg-spatial-card'
                   }
                 `}
               >
                 {isActive && (
                   <motion.div
                     layoutId="activeNavPill"
-                    className="absolute inset-0 bg-spatial-blue rounded-lg shadow-sm -z-10"
+                    className="absolute inset-0 bg-slate-900 dark:bg-spatial-blue rounded-lg shadow-sm -z-10"
                     transition={{ type: 'spring', stiffness: 450, damping: 35 }}
                   />
                 )}
-                <span className={isActive ? 'text-white' : 'text-spatial-muted'}>
+                <span className={isActive ? 'text-white' : 'text-slate-500 dark:text-spatial-muted'}>
                   {item.icon}
                 </span>
                 <span>{item.label}</span>
@@ -116,7 +116,7 @@ export const Navbar: React.FC = () => {
           {/* Report Issue CTA Button */}
           <button
             onClick={openReportModal}
-            className="px-2.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-1.5 bg-gradient-to-r from-spatial-blue to-blue-600 text-white shadow-md hover:shadow-spatial-lg hover:brightness-110 active:scale-95 transition-all duration-200 cursor-pointer whitespace-nowrap"
+            className="px-2.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 dark:bg-gradient-to-r dark:from-spatial-blue dark:to-blue-600 text-white shadow-md hover:shadow-lg active:scale-95 transition-all duration-200 cursor-pointer whitespace-nowrap"
           >
             <PlusCircle className="w-4 h-4 stroke-[2.2] shrink-0" />
             <span className="hidden sm:inline">{t.nav.reportIssue}</span>
@@ -129,8 +129,8 @@ export const Navbar: React.FC = () => {
             title="Officer & Admin Console"
             className={`hidden sm:flex p-2 rounded-xl border transition-colors ${
               activeTab === 'admin'
-                ? 'bg-spatial-blue text-white border-spatial-blue'
-                : 'border-spatial-border bg-spatial-bg hover:bg-spatial-card text-spatial-muted hover:text-spatial-text'
+                ? 'bg-slate-900 dark:bg-spatial-blue text-white border-slate-900 dark:border-spatial-blue shadow-sm'
+                : 'border-slate-200 dark:border-spatial-border bg-slate-100/80 dark:bg-spatial-bg hover:bg-slate-200/80 dark:hover:bg-spatial-card text-slate-600 dark:text-spatial-muted hover:text-slate-900 dark:hover:text-spatial-text'
             }`}
           >
             <Lock className="w-4 h-4" />
@@ -141,7 +141,7 @@ export const Navbar: React.FC = () => {
             <div className="relative">
               <button
                 onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                className="flex items-center gap-2 p-1 pl-1.5 pr-2.5 rounded-xl border border-spatial-border bg-spatial-bg hover:bg-spatial-card transition-colors text-xs font-medium"
+                className="flex items-center gap-2 p-1 pl-1.5 pr-2.5 rounded-xl border border-slate-200 dark:border-spatial-border bg-slate-100/80 dark:bg-spatial-bg hover:bg-slate-200/80 dark:hover:bg-spatial-card transition-colors text-xs font-medium shadow-sm"
               >
                 <div className="w-6 h-6 rounded-lg overflow-hidden bg-spatial-blue/20 flex items-center justify-center text-spatial-blue text-xs font-bold">
                   {user.avatar_url ? (
@@ -196,7 +196,7 @@ export const Navbar: React.FC = () => {
           ) : (
             <button
               onClick={() => openAuthModal('signin')}
-              className="px-2.5 sm:px-3 py-2 rounded-xl text-xs sm:text-sm font-medium border border-spatial-border bg-spatial-bg hover:bg-spatial-card text-spatial-text transition-all duration-200 flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
+              className="px-2.5 sm:px-3 py-2 rounded-xl text-xs sm:text-sm font-medium border border-slate-200 dark:border-spatial-border bg-slate-100/80 dark:bg-spatial-bg hover:bg-slate-200/80 dark:hover:bg-spatial-card text-slate-800 dark:text-spatial-text transition-all duration-200 flex items-center gap-1.5 cursor-pointer whitespace-nowrap shadow-sm"
             >
               <User className="w-3.5 h-3.5 text-spatial-muted" />
               <span className="hidden xs:inline">{t.nav.signIn}</span>
@@ -233,8 +233,8 @@ export const Navbar: React.FC = () => {
                     className={`
                       w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium flex items-center gap-2.5 transition-colors
                       ${isActive
-                        ? 'bg-spatial-blue text-white font-semibold'
-                        : 'text-spatial-muted hover:text-spatial-text hover:bg-spatial-bg'
+                        ? 'bg-slate-900 dark:bg-spatial-blue text-white font-semibold shadow-sm'
+                        : 'text-slate-600 dark:text-spatial-muted hover:text-slate-900 dark:hover:text-spatial-text hover:bg-slate-100 dark:hover:bg-spatial-bg'
                       }
                     `}
                   >
