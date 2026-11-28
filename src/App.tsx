@@ -7,6 +7,7 @@ import { Navbar } from './components/Navbar';
 import { LandingPage } from './pages/LandingPage';
 import { RepresentativesPage } from './pages/RepresentativesPage';
 import { ExplanationPage } from './pages/ExplanationPage';
+import { DocsPage } from './pages/DocsPage';
 import { AboutPage } from './pages/AboutPage';
 import { ContactPage } from './pages/ContactPage';
 import { DashboardPage } from './pages/DashboardPage';
@@ -28,6 +29,7 @@ const MainContent: React.FC = () => {
         {(activeTab === 'home' || activeTab === 'map') && <LandingPage />}
         {activeTab === 'representatives' && <RepresentativesPage />}
         {activeTab === 'explanation' && <ExplanationPage />}
+        {activeTab === 'docs' && <DocsPage />}
         {activeTab === 'about' && <AboutPage />}
         {activeTab === 'contact' && <ContactPage />}
         {activeTab === 'dashboard' && <DashboardPage />}

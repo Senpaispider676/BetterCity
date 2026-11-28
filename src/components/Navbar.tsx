@@ -22,6 +22,7 @@ import {
   Compass,
   ShieldCheck,
   Lock,
+  BookOpen,
   Volume2,
   VolumeX,
   Eye,
@@ -57,6 +58,7 @@ export const Navbar: React.FC = () => {
     { tab: 'home', label: t.nav.home || 'Home', icon: <Home className="w-4 h-4" /> },
     { tab: 'representatives', label: t.nav.representatives, icon: <Users className="w-4 h-4" /> },
     { tab: 'explanation', label: t.nav.explanation, icon: <HelpCircle className="w-4 h-4" /> },
+    { tab: 'docs', label: t.nav.docs || 'Docs', icon: <BookOpen className="w-4 h-4" /> },
     { tab: 'about', label: t.nav.about, icon: <Info className="w-4 h-4" /> },
     { tab: 'contact', label: t.nav.contact, icon: <Mail className="w-4 h-4" /> },
   ];
@@ -92,7 +94,7 @@ export const Navbar: React.FC = () => {
               Better City
             </span>
             <span className="text-[10px] text-spatial-muted font-medium tracking-wide uppercase mt-0.5 hidden sm:inline-block">
-              Spatial Civic Network
+              {t.brandTagline || 'Small acts, big change'}
             </span>
           </div>
         </div>

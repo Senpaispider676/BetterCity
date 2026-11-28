@@ -4,7 +4,7 @@ export const translations = {
   en: {
     // Brand
     brandName: 'Better City',
-    brandTagline: 'Spatial Civic Reporting Platform',
+    brandTagline: 'Small acts, big change',
 
     // Navbar
     nav: {
@@ -13,6 +13,7 @@ export const translations = {
       representatives: 'Representatives',
       about: 'About',
       explanation: 'Explanation',
+      docs: 'Docs',
       contact: 'Contact',
       dashboard: 'My Dashboard',
       reportIssue: 'Report Issue',
@@ -321,7 +322,7 @@ export const translations = {
   hi: {
     // Brand
     brandName: 'Better City',
-    brandTagline: 'स्थानिक नागरिक शिकायत एवं सुधार मंच',
+    brandTagline: 'Small acts, big change',
 
     // Navbar
     nav: {
@@ -330,6 +331,7 @@ export const translations = {
       representatives: 'अधिकारी व प्रतिनिधि',
       about: 'हमारे बारे में',
       explanation: 'प्रक्रिया समझें',
+      docs: 'दस्तावेज़ (Docs)',
       contact: 'संपर्क करें',
       dashboard: 'मेरा डैशबोर्ड',
       reportIssue: 'समस्या दर्ज करें',

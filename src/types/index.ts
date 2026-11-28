@@ -87,4 +87,4 @@ export interface ContactMessage {
 
 export type Language = 'en' | 'hi';
 export type Theme = 'dark' | 'light';
-export type ActiveTab = 'home' | 'map' | 'representatives' | 'about' | 'explanation' | 'contact' | 'dashboard' | 'admin' | 'report';
+export type ActiveTab = 'home' | 'map' | 'representatives' | 'about' | 'explanation' | 'docs' | 'contact' | 'dashboard' | 'admin' | 'report';
